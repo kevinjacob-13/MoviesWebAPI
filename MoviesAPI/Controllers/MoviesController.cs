@@ -21,6 +21,7 @@ namespace MoviesAPI.Controllers
 {
     [ApiController]
     [Route("api/movies")]
+    [EnableCors(PolicyName = "AllowAPIRequestIO")]
     public class MoviesController : ControllerBase
     {
         private readonly ApplicationDbContext context;
@@ -42,29 +43,33 @@ namespace MoviesAPI.Controllers
 
         [HttpGet]
         [EnableCors(PolicyName = "AllowAPIRequestIO")]
-        public async Task<ActionResult<IndexMoviePageDTO>> Get()
+        public async Task<ActionResult<List<MovieDTO>>> Get()
         {
             var top = 6;
             var today = DateTime.Today;
-            var upcomingReleases = await context.Movies
-                .Where(x => x.ReleaseDate > today)
-                .OrderBy(x => x.ReleaseDate)
-                .Take(top)
-                .ToListAsync();
+            //var upcomingReleases = await context.Movies
+            //    .Where(x => x.ReleaseDate > today)
+            //    .OrderBy(x => x.ReleaseDate)
+            //    .Take(top)
+            //    .ToListAsync();
 
             var inTheaters = await context.Movies
                 .Where(x => x.InTheaters)
                 .Take(top)
                 .ToListAsync();
 
-            var result = new IndexMoviePageDTO();
-            result.InTheaters = mapper.Map<List<MovieDTO>>(inTheaters);
-            result.UpcomingReleases = mapper.Map<List<MovieDTO>>(upcomingReleases);
+            //var result = new IndexMoviePageDTO();
+            //result.InTheaters = mapper.Map<List<MovieDTO>>(inTheaters);
+            //result.UpcomingReleases = mapper.Map<List<MovieDTO>>(upcomingReleases);
 
+            //return result;
+            var result = new List<MovieDTO>();
+            result = mapper.Map<List<MovieDTO>>(inTheaters);
             return result;
         }
 
         [HttpGet("filter")]
+        [EnableCors(PolicyName = "AllowAPIRequestIO")]
         public async Task<ActionResult<List<MovieDTO>>> Filter([FromQuery] FilterMoviesDTO filterMoviesDTO)
         {
             var moviesQueryable = context.Movies.AsQueryable();
@@ -110,6 +115,7 @@ namespace MoviesAPI.Controllers
         }
 
         [HttpGet("{id}", Name = "getMovie")]
+        [EnableCors(PolicyName = "AllowAPIRequestIO")]
         public async Task<ActionResult<MovieDetailsDTO>> Get(int id)
         {
             var movie = await context.Movies
