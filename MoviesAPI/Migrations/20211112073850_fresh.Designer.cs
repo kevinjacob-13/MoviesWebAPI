@@ -10,8 +10,8 @@ using MoviesAPI;
 namespace MoviesAPI.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20211111092154_id_change")]
-    partial class id_change
+    [Migration("20211112073850_fresh")]
+    partial class fresh
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {

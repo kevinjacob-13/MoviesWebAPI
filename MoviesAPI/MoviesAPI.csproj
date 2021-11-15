@@ -13,6 +13,10 @@
     <Compile Remove="Migrations\20200227021523_AdminRole.Designer.cs" />
     <Compile Remove="Migrations\20211104062649_latest.cs" />
     <Compile Remove="Migrations\20211104062649_latest.Designer.cs" />
+    <Compile Remove="Migrations\20211104062837_latest.cs" />
+    <Compile Remove="Migrations\20211104062837_latest.Designer.cs" />
+    <Compile Remove="Migrations\20211104070048_AdminRole.cs" />
+    <Compile Remove="Migrations\20211104070048_AdminRole.Designer.cs" />
   </ItemGroup>
 
   <ItemGroup>
@@ -32,6 +36,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Migrations\" />
     <Folder Include="wwwroot\" />
     <Folder Include="wwwroot\people\" />
   </ItemGroup>

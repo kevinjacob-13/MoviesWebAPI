@@ -84,8 +84,8 @@ namespace MoviesAPI.Controllers
         }
 
         [HttpPut("{id}")]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
-        public async Task<ActionResult> Put(string id, [FromForm] PersonCreationDTO personCreationDTO)
+        //[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        public async Task<ActionResult> Put(string id, [FromBody] PersonCreationDTO personCreationDTO)
         {
             var personDB = await context.People.FirstOrDefaultAsync(x => x.Id == id);
 
@@ -93,26 +93,26 @@ namespace MoviesAPI.Controllers
 
             personDB = mapper.Map(personCreationDTO, personDB);
 
-            if (personCreationDTO.Picture != null)
-            {
-                using (var memoryStream = new MemoryStream())
-                {
-                    await personCreationDTO.Picture.CopyToAsync(memoryStream);
-                    var content = memoryStream.ToArray();
-                    var extension = Path.GetExtension(personCreationDTO.Picture.FileName);
-                    personDB.Picture =
-                        await fileStorageService.EditFile(content, extension, containerName,
-                                                            personDB.Picture,
-                                                            personCreationDTO.Picture.ContentType);
-                }
-            }
+            //if (personCreationDTO.Picture != null)
+            //{
+            //    using (var memoryStream = new MemoryStream())
+            //    {
+            //        await personCreationDTO.Picture.CopyToAsync(memoryStream);
+            //        var content = memoryStream.ToArray();
+            //        var extension = Path.GetExtension(personCreationDTO.Picture.FileName);
+            //        personDB.Picture =
+            //            await fileStorageService.EditFile(content, extension, containerName,
+            //                                                personDB.Picture,
+            //                                                personCreationDTO.Picture.ContentType);
+            //    }
+            //}
 
             await context.SaveChangesAsync();
             return NoContent();
         }
 
         [HttpPatch("{id}")]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
+        [EnableCors(PolicyName = "AllowAPIRequestIO")]
         public async Task<ActionResult> Patch(string id, [FromBody] JsonPatchDocument<PersonPatchDTO> patchDocument)
         {
             if (patchDocument == null)

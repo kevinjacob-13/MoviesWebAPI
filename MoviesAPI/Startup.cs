@@ -42,7 +42,7 @@ namespace MoviesAPI
             services.AddCors(options =>
             {
                 options.AddPolicy("AllowAPIRequestIO",
-                    builder => builder.WithOrigins("https://localhost:4200/").WithMethods("GET", "POST").AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod());
+                    builder => builder.WithOrigins("http://localhost:4200/").WithMethods("GET", "POST").AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod());
             });
 
             services.AddDataProtection();
@@ -116,7 +116,7 @@ namespace MoviesAPI
 
             // This policy would be applied at the Web API level
             app.UseCors(builder =>
-            builder.WithOrigins("https://localhost:4200/").WithMethods("Get", "Post").AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
+            builder.WithOrigins("http://localhost:4200/").WithMethods("Get", "Post").AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
 
             app.UseEndpoints(endpoints =>
             {

@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace MoviesAPI.Migrations
 {
-    public partial class latest : Migration
+    public partial class fresh : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -67,8 +67,7 @@ namespace MoviesAPI.Migrations
                 name: "People",
                 columns: table => new
                 {
-                    Id = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Id = table.Column<string>(nullable: false),
                     Name = table.Column<string>(maxLength: 120, nullable: false),
                     Biography = table.Column<string>(nullable: true),
                     DateOfBirth = table.Column<DateTime>(nullable: false),
@@ -189,7 +188,7 @@ namespace MoviesAPI.Migrations
                 name: "MoviesActors",
                 columns: table => new
                 {
-                    PersonId = table.Column<int>(nullable: false),
+                    PersonId = table.Column<string>(nullable: false),
                     MovieId = table.Column<int>(nullable: false),
                     Character = table.Column<string>(nullable: true),
                     Order = table.Column<int>(nullable: false)
@@ -228,9 +227,9 @@ namespace MoviesAPI.Migrations
                 columns: new[] { "Id", "Biography", "DateOfBirth", "Name", "Picture" },
                 values: new object[,]
                 {
-                    { 5, null, new DateTime(1962, 1, 17, 0, 0, 0, 0, DateTimeKind.Unspecified), "Jim Carrey", null },
-                    { 6, null, new DateTime(1965, 4, 4, 0, 0, 0, 0, DateTimeKind.Unspecified), "Robert Downey Jr.", null },
-                    { 7, null, new DateTime(1981, 6, 13, 0, 0, 0, 0, DateTimeKind.Unspecified), "Chris Evans", null }
+                    { "5", null, new DateTime(1962, 1, 17, 0, 0, 0, 0, DateTimeKind.Unspecified), "Kevin Jacob", null },
+                    { "6", null, new DateTime(1965, 4, 4, 0, 0, 0, 0, DateTimeKind.Unspecified), "Robert Downey Jr.", null },
+                    { "7", null, new DateTime(1981, 6, 13, 0, 0, 0, 0, DateTimeKind.Unspecified), "Chris Evans", null }
                 });
 
             migrationBuilder.InsertData(
@@ -238,11 +237,11 @@ namespace MoviesAPI.Migrations
                 columns: new[] { "PersonId", "MovieId", "Character", "Order" },
                 values: new object[,]
                 {
-                    { 5, 4, "Dr. Ivo Robotnik", 1 },
-                    { 6, 2, "Tony Stark", 1 },
-                    { 6, 3, "Tony Stark", 1 },
-                    { 7, 2, "Steve Rogers", 2 },
-                    { 7, 3, "Steve Rogers", 2 }
+                    { "5", 4, "Dr. Ivo Robotnik", 1 },
+                    { "6", 2, "Tony Stark", 1 },
+                    { "6", 3, "Tony Stark", 1 },
+                    { "7", 2, "Steve Rogers", 2 },
+                    { "7", 3, "Steve Rogers", 2 }
                 });
 
             migrationBuilder.CreateIndex(

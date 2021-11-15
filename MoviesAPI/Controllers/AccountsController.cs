@@ -15,11 +15,13 @@ using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Cors;
 
 namespace MoviesAPI.Controllers
 {
     [ApiController]
     [Route("api/accounts")]
+    [EnableCors(PolicyName = "AllowAPIRequestIO")]
     public class AccountsController: ControllerBase
     {
         private readonly UserManager<IdentityUser> _userManager;
@@ -43,6 +45,7 @@ namespace MoviesAPI.Controllers
         }
 
         [HttpPost("Create")]
+        [EnableCors(PolicyName = "AllowAPIRequestIO")]
         public async Task<ActionResult<UserToken>> CreateUser([FromBody] UserInfo model)
         {
             var user = new IdentityUser { UserName = model.EmailAddress, Email = model.EmailAddress };
@@ -59,6 +62,7 @@ namespace MoviesAPI.Controllers
         }
 
         [HttpPost("Login")]
+        [EnableCors(PolicyName = "AllowAPIRequestIO")]
         public async Task<ActionResult<UserToken>> Login([FromBody] UserInfo model)
         {
             var result = await _signInManager.PasswordSignInAsync(model.EmailAddress,
@@ -75,6 +79,7 @@ namespace MoviesAPI.Controllers
         }
 
         [HttpPost("RenewToken")]
+        [EnableCors(PolicyName = "AllowAPIRequestIO")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<ActionResult<UserToken>> Renew()
         {
@@ -125,6 +130,7 @@ namespace MoviesAPI.Controllers
         }
 
         [HttpGet("Users")]
+        [EnableCors(PolicyName = "AllowAPIRequestIO")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
         public async Task<ActionResult<List<UserDTO>>> Get([FromQuery] PaginationDTO paginationDTO)
         {
