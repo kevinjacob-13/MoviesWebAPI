@@ -16,6 +16,7 @@ using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Cors;
+using MoviesAPI.Entities;
 
 namespace MoviesAPI.Controllers
 {
@@ -50,9 +51,19 @@ namespace MoviesAPI.Controllers
         {
             var user = new IdentityUser { UserName = model.EmailAddress, Email = model.EmailAddress };
             var result = await _userManager.CreateAsync(user, model.Password);
+            await context.SaveChangesAsync();
 
             if (result.Succeeded)
             {
+                var UserID = await context.Users.Where(x => x.Email == model.EmailAddress).Select(x => x.Id).ToListAsync();
+                var personCreationDTO = new PersonCreationDTO();
+                personCreationDTO.Id = UserID[0];
+                personCreationDTO.Name = model.EmailAddress;
+                personCreationDTO.Biography = "";
+                personCreationDTO.Picture = "";
+                var person = mapper.Map<Person>(personCreationDTO);
+                context.Add(person);
+                await context.SaveChangesAsync();
                 return await BuildToken(model);
             }
             else

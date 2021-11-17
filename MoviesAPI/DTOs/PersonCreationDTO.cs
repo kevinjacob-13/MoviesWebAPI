@@ -12,6 +12,6 @@ namespace MoviesAPI.DTOs
     {
         [FileSizeValidator(MaxFileSizeInMbs: 4)]
         [ContentTypeValidator(ContentTypeGroup.Image)]
-        public IFormFile Picture { get; set; }
+        public string Picture { get; set; }
     }
 }

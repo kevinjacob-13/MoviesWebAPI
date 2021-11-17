@@ -8,10 +8,11 @@ namespace MoviesAPI.DTOs
 {
     public class PersonPatchDTO
     {
+        public string Id { get; set; }
         [Required]
         [StringLength(120)]
         public string Name { get; set; }
         public string Biography { get; set; }
-        //public DateTime DateOfBirth { get; set; }
+        public DateTime DateOfBirth { get; set; }
     }
 }

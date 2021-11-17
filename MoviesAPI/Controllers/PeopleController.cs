@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cors;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -25,25 +26,43 @@ namespace MoviesAPI.Controllers
         private readonly ApplicationDbContext context;
         private readonly IMapper mapper;
         private readonly IFileStorageService fileStorageService;
+        private readonly UserManager<IdentityUser> _userManager;
         private readonly string containerName = "people";
 
         public PeopleController(ApplicationDbContext context,
             IMapper mapper,
-            IFileStorageService fileStorageService)
+            IFileStorageService fileStorageService,
+            UserManager<IdentityUser> userManager
+            )
         {
             this.context = context;
             this.mapper = mapper;
             this.fileStorageService = fileStorageService;
+            _userManager = userManager;
         }
 
         [HttpGet]
-        public async Task<ActionResult<List<PersonDTO>>> Get([FromQuery] PaginationDTO pagination)
+        [EnableCors(PolicyName = "AllowAPIRequestIO")]
+        public async Task<ActionResult<List<PersonDTO>>> Get()
         {
-            var queryable = context.People.AsQueryable();
-            await HttpContext.InsertPaginationParametersInResponse(queryable, pagination.RecordsPerPage);
-            var people = await queryable.Paginate(pagination).ToListAsync();
-            return mapper.Map<List<PersonDTO>>(people);
+
+            var people = await context.People
+                .ToListAsync();
+
+            //return result;
+            var result = new List<PersonDTO>();
+            result = mapper.Map<List<PersonDTO>>(people);
+            return result;
         }
+
+        //[HttpGet]
+        //public async Task<ActionResult<List<PersonDTO>>> Get([FromQuery] PaginationDTO pagination)
+        //{
+        //    var queryable = context.People.AsQueryable();
+        //    await HttpContext.InsertPaginationParametersInResponse(queryable, pagination.RecordsPerPage);
+        //    var people = await queryable.Paginate(pagination).ToListAsync();
+        //    return mapper.Map<List<PersonDTO>>(people);
+        //}
 
         [HttpGet("{id}", Name = "getPerson")]
         public async Task<ActionResult<PersonDTO>> Get(string id)
@@ -64,18 +83,18 @@ namespace MoviesAPI.Controllers
         {
             var person = mapper.Map<Person>(personCreationDTO);
 
-            if (personCreationDTO.Picture != null)
-            {
-                using (var memoryStream = new MemoryStream())
-                {
-                    await personCreationDTO.Picture.CopyToAsync(memoryStream);
-                    var content = memoryStream.ToArray();
-                    var extension = Path.GetExtension(personCreationDTO.Picture.FileName);
-                    person.Picture =
-                        await fileStorageService.SaveFile(content, extension, containerName,
-                                                            personCreationDTO.Picture.ContentType);
-                }
-            }
+            //if (personCreationDTO.Picture != null)
+            //{
+            //    using (var memoryStream = new MemoryStream())
+            //    {
+            //        await personCreationDTO.Picture.CopyToAsync(memoryStream);
+            //        var content = memoryStream.ToArray();
+            //        var extension = Path.GetExtension(personCreationDTO.Picture.FileName);
+            //        person.Picture =
+            //            await fileStorageService.SaveFile(content, extension, containerName,
+            //                                                personCreationDTO.Picture.ContentType);
+            //    }
+            //}
 
             context.Add(person);
             await context.SaveChangesAsync();
@@ -91,24 +110,15 @@ namespace MoviesAPI.Controllers
 
             if (personDB == null) { return NotFound(); }
 
-            personDB = mapper.Map(personCreationDTO, personDB);
+            personDB.Name = personCreationDTO.Name;
+            personDB.Biography = personCreationDTO.Biography;
+            personDB.DateOfBirth = personCreationDTO.DateOfBirth;
 
-            //if (personCreationDTO.Picture != null)
-            //{
-            //    using (var memoryStream = new MemoryStream())
-            //    {
-            //        await personCreationDTO.Picture.CopyToAsync(memoryStream);
-            //        var content = memoryStream.ToArray();
-            //        var extension = Path.GetExtension(personCreationDTO.Picture.FileName);
-            //        personDB.Picture =
-            //            await fileStorageService.EditFile(content, extension, containerName,
-            //                                                personDB.Picture,
-            //                                                personCreationDTO.Picture.ContentType);
-            //    }
-            //}
+
+            //personDB = mapper.Map(personCreationDTO, personDB);
 
             await context.SaveChangesAsync();
-            return NoContent();
+            return Ok();
         }
 
         [HttpPatch("{id}")]
@@ -146,8 +156,8 @@ namespace MoviesAPI.Controllers
         }
 
         [HttpDelete("{id}")]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
-        [DisableCors]
+        //[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
+        //[DisableCors]
         public async Task<ActionResult> Delete(string id)
         {
             var exists = await context.People.AnyAsync(x => x.Id == id);
@@ -157,6 +167,8 @@ namespace MoviesAPI.Controllers
             }
 
             context.Remove(new Person() { Id = id });
+            var user = await _userManager.FindByIdAsync(id);
+            await _userManager.DeleteAsync(user);
             await context.SaveChangesAsync();
 
             return NoContent();
