@@ -69,5 +69,38 @@ namespace MoviesAPI.Controllers
             //return mapper.Map<List<MoviesActorDTO>>(result);
             return result;
         }
+
+        [HttpPost]
+        //[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
+        public async Task<ActionResult> Post([FromBody] MoviesActorsCreationDTO moviesActorsCreationDTO)
+        {
+            moviesActorsCreationDTO.Order = 0;
+            if (moviesActorsCreationDTO.MovieId != 0 && moviesActorsCreationDTO.PersonId != "" && moviesActorsCreationDTO.Character != "")
+            {
+                var movieactor = mapper.Map<MoviesActors>(moviesActorsCreationDTO);
+                context.Add(movieactor);
+                await context.SaveChangesAsync();
+            }
+            else 
+            {
+                return BadRequest();
+            }
+            //var movie = await context.Movies
+            //            .Include(x => x.MoviesActors).ThenInclude(x => x.Person)
+            //            .FirstOrDefaultAsync(x => x.Id == moviesActorsCreationDTO.MovieId);
+
+            //AnnotateActorsOrder(movie);
+            return Ok();
+        }
+        private static void AnnotateActorsOrder(Movie movie)
+        {
+            if (movie.MoviesActors != null)
+            {
+                for (int i = 0; i < movie.MoviesActors.Count; i++)
+                {
+                    movie.MoviesActors[i].Order = i;
+                }
+            }
+        }
     }
 }
