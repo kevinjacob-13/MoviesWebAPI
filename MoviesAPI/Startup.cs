@@ -106,10 +106,6 @@ namespace MoviesAPI
 
             app.UseRouting();
 
-            app.UseAuthentication();
-
-            app.UseAuthorization();
-
             //app.UseCors(option => option.WithOrigins("https://localhost:4200/").AllowAnyMethod().AllowAnyHeader());
 
             //app.UseCors();
@@ -117,6 +113,10 @@ namespace MoviesAPI
             // This policy would be applied at the Web API level
             app.UseCors(builder =>
             builder.WithOrigins("http://localhost:4200/").WithMethods("Get", "Post").AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
+
+            app.UseAuthentication();
+
+            app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
             {

@@ -45,7 +45,7 @@ namespace MoviesAPI.Controllers
         [EnableCors(PolicyName = "AllowAPIRequestIO")]
         public async Task<ActionResult<List<MovieDTO>>> Get()
         {
-            var top = 6;
+            var top = 7;
             var today = DateTime.Today;
             //var upcomingReleases = await context.Movies
             //    .Where(x => x.ReleaseDate > today)
@@ -53,8 +53,7 @@ namespace MoviesAPI.Controllers
             //    .Take(top)
             //    .ToListAsync();
 
-            var inTheaters = await context.Movies
-                .Where(x => x.InTheaters)
+            var allMovies = await context.Movies
                 .Take(top)
                 .ToListAsync();
 
@@ -64,7 +63,7 @@ namespace MoviesAPI.Controllers
 
             //return result;
             var result = new List<MovieDTO>();
-            result = mapper.Map<List<MovieDTO>>(inTheaters);
+            result = mapper.Map<List<MovieDTO>>(allMovies);
             return result;
         }
 
@@ -131,9 +130,11 @@ namespace MoviesAPI.Controllers
         }
 
         [HttpPost]
-        //[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme/*, Roles = "Admin"*/)]
         public async Task<ActionResult> Post([FromBody] MovieCreationDTO movieCreationDTO)
         {
+            if (movieCreationDTO.Poster == null)
+                movieCreationDTO.Poster = "";
             var movie = mapper.Map<Movie>(movieCreationDTO);
 
             //if (movieCreationDTO.Poster != null)
@@ -169,7 +170,7 @@ namespace MoviesAPI.Controllers
         }
 
         [HttpPut("{id}")]
-        //[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme/*, Roles = "Admin"*/)]
         public async Task<ActionResult> Put(int id, [FromBody] MovieCreationDTO movieCreationDTO)
         {
             var movieDB = await context.Movies.FirstOrDefaultAsync(x => x.Id == id);
@@ -203,43 +204,9 @@ namespace MoviesAPI.Controllers
             return NoContent();
         }
 
-        //[HttpPatch("{id}")]
-        //[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
-        //public async Task<ActionResult> Patch(int id, [FromBody] JsonPatchDocument<MoviePatchDTO> patchDocument)
-        //{
-        //    if (patchDocument == null)
-        //    {
-        //        return BadRequest();
-        //    }
-
-        //    var entityFromDB = await context.Movies.FirstOrDefaultAsync(x => x.Id == id);
-
-        //    if (entityFromDB == null)
-        //    {
-        //        return NotFound();
-        //    }
-
-        //    var entityDTO = mapper.Map<MoviePatchDTO>(entityFromDB);
-
-        //    patchDocument.ApplyTo(entityDTO, ModelState);
-
-        //    var isValid = TryValidateModel(entityDTO);
-
-        //    if (!isValid)
-        //    {
-        //        return BadRequest(ModelState);
-        //    }
-
-        //    mapper.Map(entityDTO, entityFromDB);
-
-        //    await context.SaveChangesAsync();
-
-        //    return NoContent();
-        //}
-
 
         [HttpDelete("{id}")]
-        //[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme/*, Roles = "Admin"*/)]
         public async Task<ActionResult> Delete(int id)
         {
             var exists = await context.Movies.AnyAsync(x => x.Id == id);

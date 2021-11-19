@@ -103,7 +103,8 @@ namespace MoviesAPI.Controllers
         }
 
         [HttpPut("{id}")]
-        //[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        //For Both Actors and Admins
         public async Task<ActionResult> Put(string id, [FromBody] PersonCreationDTO personCreationDTO)
         {
             var personDB = await context.People.FirstOrDefaultAsync(x => x.Id == id);
@@ -156,7 +157,8 @@ namespace MoviesAPI.Controllers
         }
 
         [HttpDelete("{id}")]
-        //[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
+        //[EnableCors(PolicyName = "AllowAPIRequestIO")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         //[DisableCors]
         public async Task<ActionResult> Delete(string id)
         {
